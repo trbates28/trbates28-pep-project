@@ -37,7 +37,7 @@ public class SocialMediaController {
         app.get("example-endpoint", this::exampleHandler);
         app.post("/register", this::registerNewUserHandler);
         app.post("/login", this::loginVerifyHandler);
-        app.post("localhost:8080/messages", this::postMessageHandler);
+        app.post("/messages", this::postMessageHandler);
         app.get("/messages", this::getAllMessagesHandler);
         app.get("localhost:8080/messages/{message_id}", this::getMessageByIdHandler);
         app.delete("localhost:8080/messages/{message_id}", this::deleteMessageByIdHandler);
@@ -84,6 +84,13 @@ public class SocialMediaController {
     private void postMessageHandler(Context ctx) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Message message = mapper.readValue(ctx.body(), Message.class);
+        Message newMessage = messageService.addMessage(message);
+        if(newMessage!=null){
+            ctx.json(mapper.writeValueAsString(newMessage));
+            ctx.status(200);
+        }else{
+            ctx.status(400);
+        } 
     }
     private void getAllMessagesHandler(Context ctx) {
         List<Message> messages = messageService.getAllMessages();
